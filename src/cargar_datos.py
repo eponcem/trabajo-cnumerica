@@ -15,7 +15,3 @@ def cargar_csv(archivo):
             etiquetas.append(f'{m}-{a}')
     
     return datos, etiquetas
-
-if __name__ == '__main__':
-    ruta = os.path.join(os.path.dirname(__file__), '../data/dolar_observado_sii_2022_2025.csv') 
-    meses, etiquetas = cargar_csv(ruta)
