@@ -24,3 +24,30 @@ def analizar_cancelacion_a3(valores, directorio):
     escribir_seccion_csv(ruta_csv, 'a','--- A3: cancelacion diciembre 2022 vs diciembre 2023 (3 cifras significativas) ---',
         ['delta_p', 'error_absoluto', 'error_relativo_pct', 'afirmacion_segura'], [[round(delta_a3, 2), round(ea_delta_a3, 2), round(er_delta_a3, 2), afirmacion_segura]],)
 
+def analizar_variacion_anual_a4(valores, directorio):
+    idx_eneros = np.array([0, 12, 24, 36])
+    idx_dic = np.array([11, 23, 35, 47])
+    años = np.array([2022, 2023, 2024, 2025])
+    
+    v_ene = valores[idx_eneros]
+    v_dic = valores[idx_dic]
+    
+    aprox_ene = v_redondear(v_ene, 2)
+    aprox_dic = v_redondear(v_dic, 2)
+    
+    ea_ene = np.abs(v_ene - aprox_ene)
+    ea_dic = np.abs(v_dic - aprox_dic)
+    
+    deltas = aprox_dic - aprox_ene
+    ea_deltas = ea_ene + ea_dic
+    
+    er_deltas = np.where(deltas != 0, (ea_deltas / np.abs(deltas)) * 100, np.inf)
+    
+    resultados = np.column_stack((años, deltas, ea_deltas, er_deltas))
+    resultados_ordenados = resultados[resultados[:, 3].argsort()] 
+
+    ruta_csv = os.path.join(directorio, '../evaluacion_errores.csv')
+    filas = [[int(f[0]), round(f[1], 2), round(f[2], 2), round(f[3], 2)] for f in resultados_ordenados]
+    escribir_seccion_csv(ruta_csv, 'a', '--- A4: variacion enero-diciembre por anio (mas confiable primero) ---',
+    ['anio', 'variacion_clp', 'error_absoluto', 'error_relativo_pct'], filas,)
+
