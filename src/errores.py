@@ -20,3 +20,36 @@ def escribir_seccion_csv(ruta, modo, titulo, cabecera, filas):
             escritor.writerow(fila)
         escritor.writerow([])
 
+def analizar_error_representacion(valores, etiquetas, directorio):
+    val_aprox = v_redondear(valores, 2)
+    ea = np.abs(valores - val_aprox)
+    er = (ea / valores) * 100
+
+    ruta_csv = os.path.join(directorio, '../evaluacion_errores.csv')
+    filas = zip(etiquetas, valores, val_aprox, np.round(ea, 4), np.round(er, 4))
+    escribir_seccion_csv(
+        ruta_csv, 'w',
+        '--- A1: error de representacion por mes (2 cifras significativas) ---',
+        ['mes', 'precio_real', 'precio_aprox', 'error_absoluto', 'error_relativo_pct'],
+        filas,
+    )
+    
+    # Grafico 1
+    plt.figure(figsize=(10, 4))
+    plt.plot(etiquetas, valores, label='Real')
+    plt.plot(etiquetas, val_aprox, label='Aprox')
+    plt.xticks(rotation=90, fontsize=7)
+    plt.title("Dolar Real vs Aprox")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(os.path.join(directorio, '../graficos/1_serie_mensual.png'))
+    plt.close()
+    
+    # Grafico 3
+    plt.figure(figsize=(10, 4))
+    plt.bar(etiquetas, ea)
+    plt.xticks(rotation=90, fontsize=7)
+    plt.title("Error Absoluto de Representacion")
+    plt.tight_layout()
+    plt.savefig(os.path.join(directorio, '../graficos/3_error_representacion.png'))
+    plt.close()
