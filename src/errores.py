@@ -50,6 +50,21 @@ def analizar_error_representacion(valores, etiquetas, directorio):
     plt.savefig(os.path.join(directorio, '../graficos/3_error_representacion.png'))
     plt.close()
 
+def analizar_ejemplo_a2(valores, etiquetas, directorio, idx_compra=17, idx_venta=36):
+    p_compra_real = valores[idx_compra]
+    p_venta_real = valores[idx_venta]
+    r = evaluar_compra_venta(p_compra_real, p_venta_real)
+    er_ganancia_pct = abs(r['ea_ganancia'] / r['ganancia']) * 100 if r['ganancia'] != 0 else float('inf')
+
+    ruta_csv = os.path.join(directorio, '../evaluacion_errores.csv')
+    escribir_seccion_csv(
+        ruta_csv, 'a',
+        '--- A2: compra-venta de ejemplo ---',
+        ['mes_compra', 'mes_venta', 'ganancia_clp', 'error_absoluto_clp', 'error_relativo_pct'],
+        [[etiquetas[idx_compra], etiquetas[idx_venta], round(r['ganancia'], 2),
+          round(r['ea_ganancia'], 2), round(er_ganancia_pct, 2)]],
+    )
+
 def evaluar_compra_venta(precio_compra_real, precio_venta_real, monto=1000000):
     p_compra_aprox = v_redondear(precio_compra_real, 2)
     p_venta_aprox = v_redondear(precio_venta_real, 2)
@@ -69,3 +84,5 @@ def evaluar_compra_venta(precio_compra_real, precio_venta_real, monto=1000000):
 
     return {'p_compra_aprox': p_compra_aprox, 'p_venta_aprox': p_venta_aprox,'usd': usd, 'ganancia': ganancia, 'ea_ganancia': ea_ganancia,
     'rentabilidad': rentabilidad, 'error_rentabilidad': error_rentabilidad,}
+
+    
