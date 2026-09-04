@@ -27,12 +27,8 @@ def analizar_error_representacion(valores, etiquetas, directorio):
 
     ruta_csv = os.path.join(directorio, '../evaluacion_errores.csv')
     filas = zip(etiquetas, valores, val_aprox, np.round(ea, 4), np.round(er, 4))
-    escribir_seccion_csv(
-        ruta_csv, 'w',
-        '--- A1: error de representacion por mes (2 cifras significativas) ---',
-        ['mes', 'precio_real', 'precio_aprox', 'error_absoluto', 'error_relativo_pct'],
-        filas,
-    )
+    escribir_seccion_csv(ruta_csv, 'w','--- A1: error de representacion por mes (2 cifras significativas) ---',
+        ['mes', 'precio_real', 'precio_aprox', 'error_absoluto', 'error_relativo_pct'],filas,)
     
     # Grafico 1
     plt.figure(figsize=(10, 4))
@@ -53,3 +49,23 @@ def analizar_error_representacion(valores, etiquetas, directorio):
     plt.tight_layout()
     plt.savefig(os.path.join(directorio, '../graficos/3_error_representacion.png'))
     plt.close()
+
+def evaluar_compra_venta(precio_compra_real, precio_venta_real, monto=1000000):
+    p_compra_aprox = v_redondear(precio_compra_real, 2)
+    p_venta_aprox = v_redondear(precio_venta_real, 2)
+
+    er_compra = np.abs(precio_compra_real - p_compra_aprox) / precio_compra_real * 100
+    er_venta = np.abs(precio_venta_real - p_venta_aprox) / precio_venta_real * 100
+
+    usd = monto / p_compra_aprox
+    pesos_final = usd * p_venta_aprox
+    ganancia = pesos_final - monto
+
+    er_pesos_final = er_compra + er_venta
+    ea_ganancia = (er_pesos_final / 100) * pesos_final
+
+    rentabilidad = (ganancia / monto) * 100
+    error_rentabilidad = (ea_ganancia / monto) * 100
+
+    return {'p_compra_aprox': p_compra_aprox, 'p_venta_aprox': p_venta_aprox,'usd': usd, 'ganancia': ganancia, 'ea_ganancia': ea_ganancia,
+    'rentabilidad': rentabilidad, 'error_rentabilidad': error_rentabilidad,}
