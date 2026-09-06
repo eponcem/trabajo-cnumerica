@@ -36,3 +36,28 @@ def analizar_representacion_flotante(valores, directorio):
             ['ulp_float32', float(ulp_min), float(ulp_max), float(ulp_max - ulp_min)],
             ['resta_max_min', float(f32_diff), float(f64_diff), float(error_resta)]
         ])
+
+def analizar_deriva(valores, etiquetas, directorio):
+    monto = np.float32(1000000.0)
+    v_f32 = np.float32(valores)
+    
+    usd = monto / v_f32
+    recuperado = usd * v_f32
+    deriva = monto - recuperado 
+    
+    plt.figure(figsize=(10, 4))
+    plt.plot(etiquetas, deriva)
+    plt.xticks(rotation=90, fontsize=7)
+    plt.title("Deriva en Float32")
+    plt.ylabel("CLP")
+    plt.tight_layout()
+    plt.savefig(os.path.join(directorio, '../graficos/5_deriva_flotante.png'))
+    plt.close()
+
+if __name__ == '__main__':
+    directorio_actual = os.path.dirname(__file__)
+    ruta_csv_datos = os.path.join(directorio_actual, '../data/dolar_observado_sii_2022_2025.csv')
+    valores, etiquetas = cargar_csv(ruta_csv_datos)
+    
+    analizar_representacion_flotante(valores, directorio_actual)
+    analizar_deriva(valores, etiquetas, directorio_actual)
